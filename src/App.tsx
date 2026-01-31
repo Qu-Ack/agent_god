@@ -1,29 +1,27 @@
 import './App.css'
 import { useCallback } from 'react';
-import { ReactFlow, type Node, type Edge, type NodeChange, type EdgeChange, type Connection } from '@xyflow/react';
+import { ReactFlow, ReactFlowProvider, type Node, type Edge, type NodeChange, type EdgeChange, type Connection } from '@xyflow/react';
 import { useNodesState, useEdgesState, applyNodeChanges, applyEdgeChanges, addEdge } from '@xyflow/react';
+import { useReactFlow } from "@xyflow/react"
 import '@xyflow/react/dist/style.css';
 
-interface Node1 extends Node {
+interface Trigger extends Node {
+	kind: string;
 	text: string;
 }
 
-interface Node2 extends Node {
+interface Action extends Node {
 	text: string;
+	kind: string;
 	shape: string;
 }
 
-interface Node2 extends Node {
-	type: 'textUpdater'
-};
-
-
-
-type CustomNode = Node1 | Node2;
+type CustomNode = Trigger | Action;
 
 const initialNodes: CustomNode[] = [
 	{
 		text: "hello",
+		kind: "trigger",
 		id: "n1",
 		position: {
 			x: 0,
@@ -35,7 +33,9 @@ const initialNodes: CustomNode[] = [
 	},
 	{
 		text: "daksg",
+		kind: "action",
 		shape: "square",
+		type: "getEnv",
 		id: "n2",
 		position: {
 			x: 100,
@@ -69,7 +69,6 @@ const nodeTypes = {
 	textUpdater: TextUpdaterNode,
 };
 
-
 export default function App() {
 	const [nodes, setNodes, onNodesChange] = useNodesState<CustomNode>(initialNodes);
 	const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -86,18 +85,46 @@ export default function App() {
 		setEdges((edgesSnapshot) => addEdge({ ...params, type: "step" }, edgesSnapshot))
 	}, [])
 
+	return (
+		<ReactFlowProvider>
+			<div style={{ width: '100vw', height: '100vh' }}>
+				<DeveloperTools />
+				<ReactFlow
+					nodeTypes={nodeTypes}
+					onNodesChange={handleNodesChange}
+					onEdgesChange={handleEdgesChange}
+					onConnect={handleConnection}
+					edges={edges}
+					nodes={nodes}
+					fitView
+				/>
+			</div>
+		</ReactFlowProvider>
+	);
+}
+
+function DeveloperTools() {
+	const { getNodes, getEdges } = useReactFlow();
+
+	function handleClick() {
+		let dsl = {};
+		let nodes_map: Record<string, Node> = {};
+		const nodes = getNodes();
+		const edges = getEdges();
+
+		for (let node of nodes) {
+			nodes_map[node.id] = node;
+		}
+
+		for (let edge of edges) {
+			console.log(edge);
+		}
+	}
 
 	return (
-		<div style={{ width: '100vw', height: '100vh' }}>
-			<ReactFlow
-				nodeTypes={nodeTypes}
-				onNodesChange={handleNodesChange}
-				onEdgesChange={handleEdgesChange}
-				onConnect={handleConnection}
-				edges={edges}
-				nodes={nodes}
-				fitView
-			/>
+		<div id="dev-tools">
+			<button onClick={handleClick}>log DSL</button>
 		</div>
-	);
+	)
+
 }
