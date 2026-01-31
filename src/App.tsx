@@ -1,52 +1,101 @@
 import './App.css'
-import { useState, useCallback } from 'react';
-import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, type NodeChange, type Node, type Edge, type EdgeChange, type Connection } from '@xyflow/react';
+import { useCallback } from 'react';
+import { ReactFlow, type Node, type Edge, type NodeChange, type EdgeChange, type Connection } from '@xyflow/react';
+import { useNodesState, useEdgesState, applyNodeChanges, applyEdgeChanges, addEdge } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
-const initialNodes = [
-	{ id: 'n1', position: { x: 0, y: 0 }, data: { label: 'Node 1' } },
-	{ id: 'n2', position: { x: 0, y: 100 }, data: { label: 'Node 2' } },
-];
-const initialEdges = [{ id: 'n1-n2', source: 'n1', target: 'n2' }];
+interface Node1 extends Node {
+	text: string;
+}
 
-interface CustomNode extends Node {
-	id: string;
-	position: { x: number, y: number };
-	data: { label: string; }
+interface Node2 extends Node {
+	text: string;
+	shape: string;
+}
+
+interface Node2 extends Node {
+	type: 'textUpdater'
 };
 
 
-interface CustomEdge extends Edge {
 
+type CustomNode = Node1 | Node2;
+
+const initialNodes: CustomNode[] = [
+	{
+		text: "hello",
+		id: "n1",
+		position: {
+			x: 0,
+			y: 0,
+		},
+		data: {
+			label: "node 1"
+		},
+	},
+	{
+		text: "daksg",
+		shape: "square",
+		id: "n2",
+		position: {
+			x: 100,
+			y: 100,
+		},
+		data: {
+			label: "node 2"
+		},
+	}
+];
+
+const initialEdges: Edge[] = [
+]
+
+export function TextUpdaterNode() {
+	const onChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => {
+		console.log(evt.target.value);
+	}, []);
+
+	return (
+		<div className="text-updater-node">
+			<div>
+				<label htmlFor="text">Text:</label>
+				<input id="text" name="text" onChange={onChange} className="nodrag" />
+			</div>
+		</div>
+	);
+}
+
+const nodeTypes = {
+	textUpdater: TextUpdaterNode,
 };
 
 
 export default function App() {
-	const [nodes, setNodes] = useState(initialNodes);
-	const [edges, setEdges] = useState(initialEdges);
+	const [nodes, setNodes, onNodesChange] = useNodesState<CustomNode>(initialNodes);
+	const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-	const onNodesChange = useCallback(
-		(changes: NodeChange<CustomNode>[]) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
-		[],
-	);
+	const handleNodesChange = useCallback((changes: NodeChange<CustomNode>[]) => {
+		setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot))
+	}, [])
 
-	const onEdgesChange = useCallback(
-		(changes: EdgeChange<CustomEdge>[]) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
-		[],
-	);
-	const onConnect = useCallback(
-		(params: Connection) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
-		[],
-	);
+	const handleEdgesChange = useCallback((changes: EdgeChange[]) => {
+		setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot))
+	}, [])
+
+	const handleConnection = useCallback((params: Connection) => {
+		setEdges((edgesSnapshot) => addEdge({ ...params, type: "step" }, edgesSnapshot))
+	}, [])
+
 
 	return (
 		<div style={{ width: '100vw', height: '100vh' }}>
 			<ReactFlow
-				nodes={nodes}
+				nodeTypes={nodeTypes}
+				onNodesChange={handleNodesChange}
+				onEdgesChange={handleEdgesChange}
+				onConnect={handleConnection}
 				edges={edges}
-				onNodesChange={onNodesChange}
-				onEdgesChange={onEdgesChange}
-				onConnect={onConnect}
+				nodes={nodes}
 				fitView
 			/>
 		</div>
