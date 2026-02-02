@@ -1,0 +1,16 @@
+
+.node_menu {
+    height: 100vh;
+    background: yellow;
+    width: 20%;
+    position: absolute;
+    z-index: 50;
+}
+
+.node_menu_opener {
+    position: absolute;
+    height: 50px;
+    width: 50px;
+    padding: 10px;
+    z-index: 50;
+}
