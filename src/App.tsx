@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import { ReactFlow, ReactFlowProvider, type Edge, type NodeChange, type EdgeChange, type Connection } from '@xyflow/react';
 import { useNodesState, useEdgesState, applyNodeChanges, applyEdgeChanges, addEdge } from '@xyflow/react';
 import { CreateGhostNode, addGhostNode, updateGhostNodePosition, convertGhostToHuman } from './GhostNode';
-import { convertEdgesAndNodesToWorkflow } from './DSL';
+import { WorkflowEngine } from './DSL';
 import { useReactFlow } from "@xyflow/react"
 import '@xyflow/react/dist/style.css';
 import { type CustomNode } from './types/types';
@@ -152,9 +152,7 @@ function DeveloperTools() {
 	const { getNodes, getEdges } = useReactFlow<CustomNode>();
 
 	function handleClick() {
-		const nodes = getNodes();
-		const edges = getEdges();
-		convertEdgesAndNodesToWorkflow(nodes, edges);
+		const workflowEngine = new WorkflowEngine(getNodes(), getEdges());
 	}
 
 	function handlelogNodes() {
