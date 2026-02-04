@@ -3,47 +3,48 @@ import { useCallback, useState } from 'react';
 import { ReactFlow, ReactFlowProvider, type Edge, type NodeChange, type EdgeChange, type Connection } from '@xyflow/react';
 import { useNodesState, useEdgesState, applyNodeChanges, applyEdgeChanges, addEdge } from '@xyflow/react';
 import { CreateGhostNode, addGhostNode, updateGhostNodePosition, convertGhostToHuman } from './GhostNode';
+import { convertEdgesAndNodesToWorkflow } from './DSL';
 import { useReactFlow } from "@xyflow/react"
 import '@xyflow/react/dist/style.css';
 import { type CustomNode } from './types/types';
 import NodeMenu from './components/NodeMenu';
 
 const initialNodes: CustomNode[] = [
-//	{
-//		kind: "trigger",
-//		id: "n1",
-//		position: {
-//			x: 0,
-//			y: 0,
-//		},
-//		data: {
-//			label: "node 1"
-//		},
-//	},
-//	{
-//		kind: "action",
-//		type: "getEnv",
-//		id: "n2",
-//		position: {
-//			x: 100,
-//			y: 100,
-//		},
-//		data: {
-//			label: "node 2"
-//		},
-//	},
-//	{
-//		kind: "action",
-//		type: "getEnv",
-//		id: "n3",
-//		position: {
-//			x: 200,
-//			y: 200,
-//		},
-//		data: {
-//			label: "node 3"
-//		},
-//	},
+	//	{
+	//		kind: "trigger",
+	//		id: "n1",
+	//		position: {
+	//			x: 0,
+	//			y: 0,
+	//		},
+	//		data: {
+	//			label: "node 1"
+	//		},
+	//	},
+	//	{
+	//		kind: "action",
+	//		type: "getEnv",
+	//		id: "n2",
+	//		position: {
+	//			x: 100,
+	//			y: 100,
+	//		},
+	//		data: {
+	//			label: "node 2"
+	//		},
+	//	},
+	//	{
+	//		kind: "action",
+	//		type: "getEnv",
+	//		id: "n3",
+	//		position: {
+	//			x: 200,
+	//			y: 200,
+	//		},
+	//		data: {
+	//			label: "node 3"
+	//		},
+	//	},
 ];
 
 const initialEdges: Edge[] = [
@@ -153,10 +154,8 @@ function DeveloperTools() {
 	function handleClick() {
 		const nodes = getNodes();
 		const edges = getEdges();
-		const dsl = { nodes, edges };
-		console.log(dsl);
+		convertEdgesAndNodesToWorkflow(nodes, edges);
 	}
-
 
 	function handlelogNodes() {
 		const nodes = getNodes();
