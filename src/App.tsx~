@@ -1,15 +1,28 @@
 import './App.css'
 import { useCallback, useState } from 'react';
-import { ReactFlow, ReactFlowProvider, type Edge, type NodeChange, type EdgeChange, type Connection } from '@xyflow/react';
+import { ReactFlow, ReactFlowProvider, type Node, type Edge, type NodeChange, type EdgeChange, type Connection } from '@xyflow/react';
 import { useNodesState, useEdgesState, applyNodeChanges, applyEdgeChanges, addEdge } from '@xyflow/react';
-import { CreateGhostNode, addGhostNode, updateGhostNodePosition, findGhostNode, convertGhostToHuman } from './GhostNode';
 import { useReactFlow } from "@xyflow/react"
 import '@xyflow/react/dist/style.css';
-import { type CustomNode } from './types/types';
 import NodeMenu from './components/NodeMenu';
+
+
+interface Trigger extends Node {
+	kind: string;
+	text: string;
+};
+
+interface Action extends Node {
+	text: string;
+	kind: string;
+	shape: string;
+};
+
+type CustomNode = Trigger | Action;
 
 const initialNodes: CustomNode[] = [
 	{
+		text: "hello",
 		kind: "trigger",
 		id: "n1",
 		position: {
@@ -21,7 +34,9 @@ const initialNodes: CustomNode[] = [
 		},
 	},
 	{
+		text: "daksg",
 		kind: "action",
+		shape: "square",
 		type: "getEnv",
 		id: "n2",
 		position: {
@@ -33,7 +48,9 @@ const initialNodes: CustomNode[] = [
 		},
 	},
 	{
+		text: "daksh",
 		kind: "action",
+		shape: "square",
 		type: "getEnv",
 		id: "n3",
 		position: {
@@ -74,6 +91,7 @@ export default function App() {
 			<Editor />
 		</ReactFlowProvider>
 	)
+
 }
 
 function Editor() {
@@ -86,10 +104,6 @@ function Editor() {
 		setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot))
 	}, [])
 
-	const addNode = useCallback((node: CustomNode) => {
-		setNodes(nds => nds.concat(node));
-	}, [])
-
 	const handleEdgesChange = useCallback((changes: EdgeChange[]) => {
 		setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot))
 	}, [])
@@ -98,36 +112,54 @@ function Editor() {
 		setEdges((edgesSnapshot) => addEdge({ ...params, type: "step" }, edgesSnapshot))
 	}, [])
 
+
 	function handleSelectNode(selection: string | null) {
 		setSelectedNode(selection);
 	}
 
 	function handleMouseOver(e: React.MouseEvent<HTMLDivElement>) {
 		if (selectedNode) {
-			const pos = screenToFlowPosition({
-				x: e.clientX,
-				y: e.clientY,
-			})
+			// render the node on the editor in some transparent color
+			const idx = nodes.findIndex(node => node.id == "1233");
+			const newNode: CustomNode = {
+				text: "hello",
+				kind: "action",
+				id: "1233",
+				position: screenToFlowPosition({
+					x: e.clientX,
+					y: e.clientY,
+				}),
+				data: {
+					label: selectedNode,
+				},
+			};
 
-			if (!addGhostNode(CreateGhostNode(pos, selectedNode, selectedNode), setNodes, nodes)) {
-				console.log("a ghost node is already present, cannot add another one!");
+			if (idx == -1) {
+				setNodes((nds) => nds.concat(newNode));
+			} else {
+				setNodes(nds => {
+					const nodes = [...nds];
+					nds[idx] = newNode;
+					return nodes;
+				})
 			}
 		}
 	}
+
+	function updateNodePosition(nodeId: string, position: { x: number; y: number }) {
+		setNodes((nds) =>
+			nds.map((node) =>
+				node.id === nodeId
+					? { ...node, position }
+					: node
+			)
+		);
+	}
+
 
 	function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
 		if (selectedNode) {
-			console.log("updating...");
-			updateGhostNodePosition(screenToFlowPosition({ x: e.clientX, y: e.clientY }), setNodes)
-		}
-	}
-
-	function handleMouseClick() {
-		if (selectedNode) {
-			if (!convertGhostToHuman(setNodes, nodes)) {
-				console.log("could not add to nodes either no ghost node present, or wrong ghost_node.kind")
-			}
-			setSelectedNode(null);
+			updateNodePosition("1233", screenToFlowPosition({ x: e.clientX, y: e.clientY }));
 		}
 	}
 
@@ -142,7 +174,6 @@ function Editor() {
 				onConnect={handleConnection}
 				onMouseOver={handleMouseOver}
 				onMouseMove={handleMouseMove}
-				onClick={handleMouseClick}
 				edges={edges}
 				nodes={nodes}
 				fitView
@@ -183,16 +214,9 @@ function DeveloperTools() {
 		}
 	}
 
-
-	function handlelogNodes() {
-		const nodes = getNodes();
-		console.log(nodes);
-	}
-
 	return (
 		<div id="dev-tools">
 			<button onClick={handleClick}>log DSL</button>
-			<button onClick={handlelogNodes}>log nodes</button>
 		</div>
 	)
 }
