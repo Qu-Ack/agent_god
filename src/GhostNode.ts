@@ -1,5 +1,5 @@
 import { type Node, type XYPosition } from "@xyflow/react"
-import { type CustomNode, GMAIL_TRIG, type Trigger } from "./types/types";
+import { type CustomNode, GMAIL_TRIG, GMAIL_ACT, DISCORD_MSG_ACT, type Trigger, type Action } from "./types/types";
 import { makeid } from "./utils";
 
 interface GhostNode extends Node {
@@ -52,6 +52,43 @@ function convertGhostToHuman(setNodes: React.Dispatch<React.SetStateAction<Custo
 			})
 
 			return true;
+		case GMAIL_ACT:
+			const gmail_act: Action = {
+				id: makeid(6),
+				kind: GMAIL_ACT,
+				position: ghost_node.position,
+				data: {
+					label: GMAIL_ACT,
+				}
+			}
+
+			setNodes(nds => {
+				const filtered = nds.filter(nd => nd.id != GHOST_NODE_ID);
+
+				const updated_elem = [...filtered, gmail_act];
+				return updated_elem;
+			})
+
+			return true;
+		case DISCORD_MSG_ACT:
+			const discord_msg_act: Action = {
+				id: makeid(6),
+				kind: DISCORD_MSG_ACT,
+				position: ghost_node.position,
+				data: {
+					label: DISCORD_MSG_ACT,
+				}
+			}
+
+			setNodes(nds => {
+				const filtered = nds.filter(nd => nd.id != GHOST_NODE_ID);
+
+				const updated_elem = [...filtered, discord_msg_act];
+				return updated_elem;
+			})
+
+			return true;
+
 
 		default:
 			return false;

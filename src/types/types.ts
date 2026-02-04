@@ -16,4 +16,6 @@ export type CustomNode = Trigger | Action | GhostNode;
 
 export const GMAIL_TRIG = "gmail trigger";
 export const GMAIL_ACT = "gmail action";
+export const DISCORD_MSG_ACT = "discord message";
+
 

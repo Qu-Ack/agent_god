@@ -1,8 +1,6 @@
 import { useState } from "react"
 import "./NodeMenu.css"
-import { GMAIL_TRIG } from "../types/types";
-
-
+import { GMAIL_TRIG, GMAIL_ACT, DISCORD_MSG_ACT } from "../types/types";
 
 export default function NodeMenu({ handleSelection }: { handleSelection: (selection: string | null) => void }) {
 	const [collapsed, setCollapsed] = useState(true);
@@ -24,6 +22,8 @@ export default function NodeMenu({ handleSelection }: { handleSelection: (select
 
 				<div>
 					<button onClick={() => handleSelection(GMAIL_TRIG)}>Gmail Trigger</button>
+					<button onClick={() => handleSelection(GMAIL_ACT)}>Gmail Action</button>
+					<button onClick={() => handleSelection(DISCORD_MSG_ACT)}>Discord Message Action</button>
 				</div>
 			</div>
 		)

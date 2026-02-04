@@ -2,48 +2,48 @@ import './App.css'
 import { useCallback, useState } from 'react';
 import { ReactFlow, ReactFlowProvider, type Edge, type NodeChange, type EdgeChange, type Connection } from '@xyflow/react';
 import { useNodesState, useEdgesState, applyNodeChanges, applyEdgeChanges, addEdge } from '@xyflow/react';
-import { CreateGhostNode, addGhostNode, updateGhostNodePosition, findGhostNode, convertGhostToHuman } from './GhostNode';
+import { CreateGhostNode, addGhostNode, updateGhostNodePosition, convertGhostToHuman } from './GhostNode';
 import { useReactFlow } from "@xyflow/react"
 import '@xyflow/react/dist/style.css';
 import { type CustomNode } from './types/types';
 import NodeMenu from './components/NodeMenu';
 
 const initialNodes: CustomNode[] = [
-	{
-		kind: "trigger",
-		id: "n1",
-		position: {
-			x: 0,
-			y: 0,
-		},
-		data: {
-			label: "node 1"
-		},
-	},
-	{
-		kind: "action",
-		type: "getEnv",
-		id: "n2",
-		position: {
-			x: 100,
-			y: 100,
-		},
-		data: {
-			label: "node 2"
-		},
-	},
-	{
-		kind: "action",
-		type: "getEnv",
-		id: "n3",
-		position: {
-			x: 200,
-			y: 200,
-		},
-		data: {
-			label: "node 3"
-		},
-	},
+//	{
+//		kind: "trigger",
+//		id: "n1",
+//		position: {
+//			x: 0,
+//			y: 0,
+//		},
+//		data: {
+//			label: "node 1"
+//		},
+//	},
+//	{
+//		kind: "action",
+//		type: "getEnv",
+//		id: "n2",
+//		position: {
+//			x: 100,
+//			y: 100,
+//		},
+//		data: {
+//			label: "node 2"
+//		},
+//	},
+//	{
+//		kind: "action",
+//		type: "getEnv",
+//		id: "n3",
+//		position: {
+//			x: 200,
+//			y: 200,
+//		},
+//		data: {
+//			label: "node 3"
+//		},
+//	},
 ];
 
 const initialEdges: Edge[] = [
@@ -84,10 +84,6 @@ function Editor() {
 
 	const handleNodesChange = useCallback((changes: NodeChange<CustomNode>[]) => {
 		setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot))
-	}, [])
-
-	const addNode = useCallback((node: CustomNode) => {
-		setNodes(nds => nds.concat(node));
 	}, [])
 
 	const handleEdgesChange = useCallback((changes: EdgeChange[]) => {
@@ -155,32 +151,10 @@ function DeveloperTools() {
 	const { getNodes, getEdges } = useReactFlow<CustomNode>();
 
 	function handleClick() {
-		let nodes_map: Record<string, CustomNode> = {};
 		const nodes = getNodes();
 		const edges = getEdges();
-
-		for (let node of nodes) {
-			nodes_map[node.id] = node;
-		}
-
-		for (let edge of edges) {
-			let source_node = nodes_map[edge.source];
-			let target_node = nodes_map[edge.target];
-			switch (source_node.kind) {
-				case "trigger":
-					console.log(source_node);
-					console.log(target_node);
-					console.log("=========");
-					break;
-				case "action":
-					console.log(source_node);
-					console.log(target_node);
-					console.log("=========");
-					break;
-				default:
-					break;
-			}
-		}
+		const dsl = { nodes, edges };
+		console.log(dsl);
 	}
 
 
