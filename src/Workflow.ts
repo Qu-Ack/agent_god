@@ -1,6 +1,7 @@
 import { type CustomNode } from "./types/types"
 import { type Edge } from "@xyflow/react"
 import { Queue } from "./Queue"
+import { executeActionNodes } from "./Execute_Node"
 
 export class WorkflowEngine {
 	adj: Record<string, string[]>
@@ -59,7 +60,18 @@ export class WorkflowEngine {
 				}
 			}
 		}
-		if (!flag) execution_queue.print();
+		if (!flag) return execution_queue;
+	}
+
+	executeExecutionQueue(exec_queue: Queue<CustomNode>) {
+		// make a context, Execution Context
+		while (!exec_queue.empty()) {
+			const f = exec_queue.front();
+			exec_queue.pop();
+
+			executeActionNodes(f);
+			// update the execution context based on the previous results;
+		}
 	}
 
 	execute(startNodes: string[], nodes: CustomNode[]) {
@@ -67,8 +79,17 @@ export class WorkflowEngine {
 			console.log("no start node found.");
 		}
 
+		const execution_queues = [];
 		for (const node of startNodes) {
-			this.ConvertToExecutionQueue(node, nodes);
+			const r = this.ConvertToExecutionQueue(node, nodes);
+			if (r) {
+				execution_queues.push(r);
+			}
+		}
+
+		// we can make this section parallel
+		for (let e of execution_queues) {
+			this.executeExecutionQueue(e);
 		}
 	}
 
