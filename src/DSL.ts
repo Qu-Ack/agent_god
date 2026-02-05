@@ -1,5 +1,6 @@
 import { type CustomNode } from "./types/types"
 import { type Edge } from "@xyflow/react"
+import { Queue } from "./Queue"
 
 export class WorkflowEngine {
 	adj: Record<string, string[]>
@@ -20,15 +21,38 @@ export class WorkflowEngine {
 			this.adj[edge.source].push(edge.target);
 		}
 
-		console.log(this.adj);
-		this.getStartNodes();
+		this.execute(this.getStartNodes());
+	}
+
+	ConvertToExecutionQueue(node: string) {
+		let q = new Queue<string>();
+		let execution_queue = new Queue<CustomNode>();
+		q.push(node);
+
+		while (!q.empty()) {
+			const f = q.front();
+			q.pop();
+
+			for (const n of this.adj[f]) {
+				execution_queue.push(this.NodeMap[n]);
+				q.push(n);
+			}
+		}
+
+		execution_queue.print();
+	}
+
+	execute(startNodes: string[]) {
+		for (const node of startNodes) {
+			this.ConvertToExecutionQueue(node);
+		}
 	}
 
 	getStartNodes(): string[] {
 		this.Incoming = new Set<string>();
 
 		for (const sourceId in this.adj) {
-			for (const targetId of this.adj[sourceId]) {  
+			for (const targetId of this.adj[sourceId]) {
 				this.Incoming.add(targetId);
 			}
 		}
@@ -40,7 +64,6 @@ export class WorkflowEngine {
 			}
 		}
 
-		console.log(result);
 		return result;
 	}
 }
