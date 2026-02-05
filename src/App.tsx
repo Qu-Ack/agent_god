@@ -153,6 +153,7 @@ function DeveloperTools() {
 
 	function handleClick() {
 		const workflowEngine = new WorkflowEngine(getNodes(), getEdges());
+		console.log(workflowEngine.adj);
 	}
 
 	function handlelogNodes() {
@@ -160,10 +161,16 @@ function DeveloperTools() {
 		console.log(nodes);
 	}
 
+	function handlelogEdges() {
+		const edges = getEdges();
+		console.log(edges);
+	}
+
 	return (
 		<div id="dev-tools">
-			<button onClick={handleClick}>log DSL</button>
+			<button onClick={handleClick}>log adj</button>
 			<button onClick={handlelogNodes}>log nodes</button>
+			<button onClick={handlelogEdges}>log edges</button>
 		</div>
 	)
 }

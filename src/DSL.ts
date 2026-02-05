@@ -5,12 +5,17 @@ import { Queue } from "./Queue"
 export class WorkflowEngine {
 	adj: Record<string, string[]>
 	NodeMap: Record<string, CustomNode>
+	TotalNodes: number;
+	TotalEdges: number;
 	Incoming: Set<string>
 
 	constructor(nodes: CustomNode[], edges: Edge[]) {
 		this.adj = {};
 		this.NodeMap = {};
 		this.Incoming = new Set<string>();
+
+		this.TotalNodes = nodes.length;
+		this.TotalEdges = edges.length;
 
 		for (const node of nodes) {
 			this.adj[node.id] = [];
@@ -21,30 +26,49 @@ export class WorkflowEngine {
 			this.adj[edge.source].push(edge.target);
 		}
 
-		this.execute(this.getStartNodes());
+		this.execute(this.getStartNodes(), nodes);
 	}
 
-	ConvertToExecutionQueue(node: string) {
+	ConvertToExecutionQueue(node: string, nodes: CustomNode[]) {
 		let q = new Queue<string>();
 		let execution_queue = new Queue<CustomNode>();
+
 		q.push(node);
+
+		let VisitedMap: Record<string, number> = {};
+
+		for (const node of nodes) {
+			VisitedMap[node.id] = -1;
+		}
+
+		let flag = false;
 
 		while (!q.empty()) {
 			const f = q.front();
 			q.pop();
+			VisitedMap[f] = 1
 
 			for (const n of this.adj[f]) {
-				execution_queue.push(this.NodeMap[n]);
-				q.push(n);
+				if (VisitedMap[n] == -1) {
+					execution_queue.push(this.NodeMap[n]);
+					q.push(n);
+				} else {
+					console.log("breaking cycle detected");
+					flag = true;
+					break;
+				}
 			}
 		}
-
-		execution_queue.print();
+		if (!flag) execution_queue.print();
 	}
 
-	execute(startNodes: string[]) {
+	execute(startNodes: string[], nodes: CustomNode[]) {
+		if (startNodes.length == 0) {
+			console.log("no start node found.");
+		}
+
 		for (const node of startNodes) {
-			this.ConvertToExecutionQueue(node);
+			this.ConvertToExecutionQueue(node, nodes);
 		}
 	}
 
