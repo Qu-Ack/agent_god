@@ -13,11 +13,11 @@ export function executeActionNodes(node: CustomNode) {
 	}
 }
 
-function executeGmailAct(node: Action) {
-	console.log("gmail action");
-	console.log(node);
-}
+// https://discord.com/api/v{version_number}
+// https://gmail.googleapis.com
 
+function executeGmailAct(node: Action) {
+}
 
 function executeDiscordMsgAct(node: Action) {
 	console.log("discord message");
