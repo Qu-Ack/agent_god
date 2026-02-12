@@ -47,9 +47,9 @@ export class WorkflowEngine {
 		while (!q.empty()) {
 			const f = q.front();
 			q.pop();
-			VisitedMap[f] = 1
+			VisitedMap[f!] = 1
 
-			for (const n of this.adj[f]) {
+			for (const n of this.adj[f!]) {
 				if (VisitedMap[n] == -1) {
 					execution_queue.push(this.NodeMap[n]);
 					q.push(n);
@@ -68,8 +68,7 @@ export class WorkflowEngine {
 		while (!exec_queue.empty()) {
 			const f = exec_queue.front();
 			exec_queue.pop();
-
-			executeActionNodes(f);
+			executeActionNodes(f!);
 			// update the execution context based on the previous results;
 		}
 	}

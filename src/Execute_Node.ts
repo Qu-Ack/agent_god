@@ -17,9 +17,17 @@ export function executeActionNodes(node: CustomNode) {
 // https://gmail.googleapis.com
 
 function executeGmailAct(node: Action) {
+	console.log("gmail act");
+	console.log(node);
 }
 
 function executeDiscordMsgAct(node: Action) {
 	console.log("discord message");
 	console.log(node);
 }
+
+
+
+
+
+

@@ -1,8 +1,7 @@
 export class Queue<T> {
-
-	start: number;
-	end: number;
-	elements: T[]
+	private start: number;
+	private end: number;
+	private elements: T[];
 
 	constructor() {
 		this.start = -1;
@@ -10,52 +9,55 @@ export class Queue<T> {
 		this.elements = [];
 	}
 
-	push(elem: T) {
-		if (this.start == -1 && this.end == -1) {
-			this.elements.push(elem);
+	push(elem: T): void {
+		if (this.start === -1 && this.end === -1) {
 			this.start = 0;
 			this.end = 0;
 		} else {
-			this.elements.push(elem);
 			this.end++;
 		}
+		this.elements.push(elem);
 	}
 
-	pop() {
-		if (this.start == -1 && this.end == -1) {
-			return undefined
-		} else {
-			// we are not freeing memory
-			// there would be elements at the start of the array that will hold memory.
-			this.start++;
+	pop(): T | undefined {
+		if (this.start === -1 || this.start > this.end) {
+			return undefined;
 		}
+
+		const elem = this.elements[this.start];
+		this.start++;
+
+		if (this.start > this.end) {
+			this.start = -1;
+			this.end = -1;
+			this.elements = []; 
+		}
+
+		return elem;
 	}
 
-	print() {
+	print(): void {
 		for (let i = this.start; i <= this.end; i++) {
 			console.log(this.elements[i]);
 		}
 	}
 
-	front() {
+	front(): T | undefined {
+		if (this.start === -1) return undefined;
 		return this.elements[this.start];
 	}
 
-	back() {
-		if (this.end == -1) {
-			return;
-		} else {
-			return this.elements[this.end];
-		}
-
+	back(): T | undefined {
+		if (this.end === -1) return undefined;
+		return this.elements[this.end];
 	}
 
-	size() {
+	size(): number {
+		if (this.start === -1) return 0;
 		return this.end - this.start + 1;
 	}
 
-	empty() {
-		if (this.start == -1) return true;
-		if ((this.end - this.start) + 1 == 0) return true;
+	empty(): boolean {
+		return this.start === -1 || this.start > this.end;
 	}
-};
+}
